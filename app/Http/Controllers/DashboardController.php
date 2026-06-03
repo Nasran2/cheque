@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cheque;
+use App\Models\ChequeSetting;
 use App\Models\Customer;
 use App\Models\Supplier;
 use Carbon\CarbonPeriod;
@@ -59,6 +60,48 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Retrieve and parse reminder settings
+        $custDaysStr = ChequeSetting::getValue('customer_reminder_days', '5');
+        $custDaysArr = array_filter(array_map('intval', explode(',', $custDaysStr)));
+        $maxCustDays = !empty($custDaysArr) ? max($custDaysArr) : 5;
+
+        $suppDaysStr = ChequeSetting::getValue('supplier_reminder_days', '5');
+        $suppDaysArr = array_filter(array_map('intval', explode(',', $suppDaysStr)));
+        $maxSuppDays = !empty($suppDaysArr) ? max($suppDaysArr) : 5;
+
+        // Fetch Customer Reminders (received customer cheques, not transferred)
+        $customerReminders = collect();
+        if (ChequeSetting::getValue('customer_reminders_enabled', '1') === '1') {
+            $customerReminders = Cheque::with(['customer'])
+                ->where('cheque_type', Cheque::TYPE_CUSTOMER_RECEIVED)
+                ->where('is_transferred_to_supplier', false)
+                ->whereIn('status', [Cheque::STATUS_PENDING, Cheque::STATUS_DEPOSITED, Cheque::STATUS_HOLD])
+                ->whereDate('cheque_date', '<=', today()->addDays($maxCustDays))
+                ->orderBy('cheque_date')
+                ->get();
+        }
+
+        // Fetch Supplier Reminders (own issued cheques OR transferred customer cheques)
+        $supplierReminders = collect();
+        if (ChequeSetting::getValue('supplier_reminders_enabled', '1') === '1') {
+            $supplierReminders = Cheque::with(['supplier', 'customer', 'givenToSupplier'])
+                ->whereIn('status', [Cheque::STATUS_PENDING, Cheque::STATUS_DEPOSITED, Cheque::STATUS_HOLD])
+                ->whereDate('cheque_date', '<=', today()->addDays($maxSuppDays))
+                ->where(function ($query) {
+                    $query->where(function ($q) {
+                        $q->where('cheque_type', Cheque::TYPE_OWN_ISSUED)
+                          ->where('supplier_cheque_mode', 'own_cheque');
+                    })
+                    ->orWhere(function ($q) {
+                        $q->where('cheque_type', Cheque::TYPE_CUSTOMER_RECEIVED)
+                          ->where('is_transferred_to_supplier', true)
+                          ->whereNotNull('given_to_supplier_id');
+                    });
+                })
+                ->orderBy('cheque_date')
+                ->get();
+        }
+
         $statusCounts = collect([
             Cheque::STATUS_PENDING,
             Cheque::STATUS_PASSED,
@@ -84,6 +127,8 @@ class DashboardController extends Controller
             'recentCheques' => $recentCheques,
             'upcomingCheques' => $upcomingCheques,
             'overdueCheques' => $overdueCheques,
+            'customerReminders' => $customerReminders,
+            'supplierReminders' => $supplierReminders,
             'statusCounts' => $statusCounts,
             'months' => $months,
             'customers' => Customer::where('status', 'active')->orderBy('name')->get(),

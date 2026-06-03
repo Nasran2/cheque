@@ -43,6 +43,127 @@
         <x-dashboard-card icon="fa-solid fa-arrow-up" title="Amount to Pay" :count="null" :amount="$summary['amount_to_pay']" color="purplePay" sub="To Suppliers" />
     </div>
 
+    {{-- Cheque Reminders Section --}}
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {{-- Customer Reminders Card --}}
+        <section class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-extrabold text-navy">
+                    <i class="fa-solid fa-users text-teal mr-2"></i>Customer Cheque Reminders
+                </h3>
+                @if ($customerReminders->isNotEmpty())
+                    <span class="rounded-full bg-teal/10 px-3 py-1 text-xs font-bold text-teal">
+                        {{ $customerReminders->count() }} Alert{{ $customerReminders->count() > 1 ? 's' : '' }}
+                    </span>
+                @endif
+            </div>
+
+            @if ($customerReminders->isEmpty())
+                <div class="rounded-2xl border border-slate-100/60 bg-slate-50/50 p-6 text-center text-sm text-slate-500">
+                    <i class="fa-regular fa-bell-slash text-slate-300 text-xl block mb-2"></i>
+                    No customer cheques due or overdue.
+                </div>
+            @else
+                <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                    @foreach ($customerReminders as $cheque)
+                        @php
+                            $daysDiff = today()->diffInDays($cheque->cheque_date, false);
+                            $countdownText = $daysDiff < 0 ? 'Overdue by ' . abs($daysDiff) . ' days' : ($daysDiff === 0 ? 'Due today' : ($daysDiff === 1 ? 'Due tomorrow' : 'Due in ' . $daysDiff . ' days'));
+                            $countdownClass = $daysDiff < 0 ? 'bg-red-50 text-red-700 border-red-100' : ($daysDiff === 0 ? 'bg-orange-50 text-orange-700 border-orange-100' : 'bg-slate-50 text-slate-700 border-slate-100');
+                        @endphp
+                        <div class="rounded-2xl border border-slate-100 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 hover:bg-slate-50 transition">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('cheques.show', $cheque->id) }}" class="font-extrabold text-navy hover:underline">#{{ $cheque->cheque_no }}</a>
+                                    <span class="rounded px-2 py-0.5 text-[10px] font-bold border {{ $countdownClass }}">
+                                        {{ $countdownText }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-slate-500 font-medium">
+                                    Customer: <strong class="text-slate-700">{{ $cheque->customer?->name ?? 'Unknown Customer' }}</strong>
+                                </p>
+                                <p class="text-xs text-slate-400">
+                                    {{ $cheque->bank_name }} | Due Date: {{ $cheque->cheque_date?->format('d M Y') }}
+                                </p>
+                            </div>
+                            <div class="text-left sm:text-right shrink-0">
+                                <p class="text-base font-black text-primary">{{ Currency::formatLkr($cheque->amount) }}</p>
+                                <p class="text-[10px] font-extrabold uppercase tracking-wide text-slate-400 mt-0.5">
+                                    {{ ChequePresentation::statusLabel($cheque->status) }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
+        {{-- Supplier Reminders Card --}}
+        <section class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-extrabold text-navy">
+                    <i class="fa-solid fa-truck-field text-purplePay mr-2"></i>Supplier Cheque Reminders
+                </h3>
+                @if ($supplierReminders->isNotEmpty())
+                    <span class="rounded-full bg-purplePay/10 px-3 py-1 text-xs font-bold text-purplePay">
+                        {{ $supplierReminders->count() }} Alert{{ $supplierReminders->count() > 1 ? 's' : '' }}
+                    </span>
+                @endif
+            </div>
+
+            @if ($supplierReminders->isEmpty())
+                <div class="rounded-2xl border border-slate-100/60 bg-slate-50/50 p-6 text-center text-sm text-slate-500">
+                    <i class="fa-regular fa-bell-slash text-slate-300 text-xl block mb-2"></i>
+                    No supplier cheques due or overdue.
+                </div>
+            @else
+                <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                    @foreach ($supplierReminders as $cheque)
+                        @php
+                            $daysDiff = today()->diffInDays($cheque->cheque_date, false);
+                            $countdownText = $daysDiff < 0 ? 'Overdue by ' . abs($daysDiff) . ' days' : ($daysDiff === 0 ? 'Due today' : ($daysDiff === 1 ? 'Due tomorrow' : 'Due in ' . $daysDiff . ' days'));
+                            $countdownClass = $daysDiff < 0 ? 'bg-red-50 text-red-700 border-red-100' : ($daysDiff === 0 ? 'bg-orange-50 text-orange-700 border-orange-100' : 'bg-slate-50 text-slate-700 border-slate-100');
+                            
+                            $isTransferred = ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED && $cheque->is_transferred_to_supplier);
+                        @endphp
+                        <div class="rounded-2xl border border-slate-100 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 hover:bg-slate-50 transition">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('cheques.show', $cheque->id) }}" class="font-extrabold text-navy hover:underline">#{{ $cheque->cheque_no }}</a>
+                                    <span class="rounded px-2 py-0.5 text-[10px] font-bold border {{ $countdownClass }}">
+                                        {{ $countdownText }}
+                                    </span>
+                                    <span class="rounded px-2 py-0.5 text-[10px] font-extrabold uppercase {{ $isTransferred ? 'bg-amber-100 text-amber-800' : 'bg-violet-100 text-violet-800' }}">
+                                        {{ $isTransferred ? 'Transferred' : 'Own Issued' }}
+                                    </span>
+                                </div>
+                                
+                                <p class="text-sm text-slate-500 font-medium">
+                                    @if ($isTransferred)
+                                        To Supplier: <strong class="text-slate-700">{{ $cheque->givenToSupplier?->name ?? 'Unknown Supplier' }}</strong>
+                                        <span class="text-xs text-slate-400 block sm:inline sm:ml-2">(From Customer: {{ $cheque->customer?->name ?? 'Unknown' }})</span>
+                                    @else
+                                        To Supplier: <strong class="text-slate-700">{{ $cheque->supplier?->name ?? 'Unknown Supplier' }}</strong>
+                                    @endif
+                                </p>
+                                
+                                <p class="text-xs text-slate-400">
+                                    {{ $cheque->bank_name }} | Due Date: {{ $cheque->cheque_date?->format('d M Y') }}
+                                </p>
+                            </div>
+                            <div class="text-left sm:text-right shrink-0">
+                                <p class="text-base font-black text-purplePay">{{ Currency::formatLkr($cheque->amount) }}</p>
+                                <p class="text-[10px] font-extrabold uppercase tracking-wide text-slate-400 mt-0.5">
+                                    {{ ChequePresentation::statusLabel($cheque->status) }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+    </div>
+
     <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <section id="recent-cheques" class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40 lg:col-span-2">
             <div class="mb-4 flex items-center justify-between">
