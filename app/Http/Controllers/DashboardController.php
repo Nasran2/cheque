@@ -76,6 +76,7 @@ class DashboardController extends Controller
                 ->where('cheque_type', Cheque::TYPE_CUSTOMER_RECEIVED)
                 ->where('is_transferred_to_supplier', false)
                 ->whereIn('status', [Cheque::STATUS_PENDING, Cheque::STATUS_DEPOSITED, Cheque::STATUS_HOLD])
+                ->whereDate('cheque_date', '>=', today()->subDays($maxCustDays))
                 ->whereDate('cheque_date', '<=', today()->addDays($maxCustDays))
                 ->orderBy('cheque_date')
                 ->get();
@@ -86,6 +87,7 @@ class DashboardController extends Controller
         if (ChequeSetting::getValue('supplier_reminders_enabled', '1') === '1') {
             $supplierReminders = Cheque::with(['supplier', 'customer', 'givenToSupplier'])
                 ->whereIn('status', [Cheque::STATUS_PENDING, Cheque::STATUS_DEPOSITED, Cheque::STATUS_HOLD])
+                ->whereDate('cheque_date', '>=', today()->subDays($maxSuppDays))
                 ->whereDate('cheque_date', '<=', today()->addDays($maxSuppDays))
                 ->where(function ($query) {
                     $query->where(function ($q) {

@@ -48,7 +48,7 @@
             \App\Models\Cheque::STATUS_PENDING,
             \App\Models\Cheque::STATUS_DEPOSITED,
             \App\Models\Cheque::STATUS_HOLD,
-        ])->whereDate('cheque_date', '<=', today())->count();
+        ])->whereDate('cheque_date', today())->count();
     @endphp
 
     <div id="mobileOverlay" class="fixed inset-0 z-40 hidden bg-slate-950/50 lg:hidden"></div>
@@ -182,9 +182,11 @@
                     </div>
                     <a href="{{ route('cheques.upcoming') }}" class="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10" title="View upcoming and due cheques">
                         <i class="fa-regular fa-bell text-lg"></i>
-                        <span class="absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold">
-                            {{ $headerAlertCount }}
-                        </span>
+                        @if ($headerAlertCount > 0)
+                            <span class="absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold">
+                                {{ $headerAlertCount }}
+                            </span>
+                        @endif
                     </a>
                 </div>
             </header>
@@ -208,7 +210,9 @@
 
                     <a href="{{ route('cheques.upcoming') }}" class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-primary hover:text-white" title="View upcoming and due cheques">
                         <i class="fa-regular fa-bell text-lg"></i>
-                        <span class="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[11px] font-bold text-white">{{ $headerAlertCount }}</span>
+                        @if ($headerAlertCount > 0)
+                            <span class="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[11px] font-bold text-white">{{ $headerAlertCount }}</span>
+                        @endif
                     </a>
 
                     <a href="{{ route('cheques.create') }}" class="flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:bg-blue-700">
