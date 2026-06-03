@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 xl:grid-cols-4 2xl:grid-cols-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         @foreach ([
             ['Today Cheques', $summary['today_count'], 'fa-regular fa-calendar-check'],
             ['Tomorrow Cheques', $summary['tomorrow_count'], 'fa-regular fa-calendar-plus'],
