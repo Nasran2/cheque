@@ -51,4 +51,20 @@ class ChequePresentation
             default => 'bg-slate-100 text-slate-700 ring-slate-200',
         };
     }
+
+    public static function displayTypeLabel(Cheque $cheque): string
+    {
+        if ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED && $cheque->is_transferred_to_supplier) {
+            return 'Transferred';
+        }
+        return self::typeLabel($cheque->cheque_type);
+    }
+
+    public static function displayTypeBadgeClass(Cheque $cheque): string
+    {
+        if ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED && $cheque->is_transferred_to_supplier) {
+            return 'bg-amber-100 text-amber-700 ring-amber-200';
+        }
+        return self::typeBadgeClass($cheque->cheque_type);
+    }
 }

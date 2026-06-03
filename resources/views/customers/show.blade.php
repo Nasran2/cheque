@@ -33,9 +33,7 @@
             <div class="rounded-3xl bg-white p-5 shadow-soft">
                 <h4 class="mb-4 font-extrabold text-navy">Balance Details</h4>
                 <dl class="space-y-3 text-sm">
-                    <div class="flex justify-between"><dt class="text-slate-500">Opening Balance</dt><dd class="font-bold">{{ Currency::formatLkr($customer->opening_balance) }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-500">Current Balance</dt><dd class="font-bold text-primary">{{ Currency::formatLkr($customer->current_balance) }}</dd></div>
-                    <div class="flex justify-between"><dt class="text-slate-500">Credit Limit</dt><dd class="font-bold">{{ $customer->credit_limit ? Currency::formatLkr($customer->credit_limit) : '-' }}</dd></div>
                 </dl>
             </div>
 
@@ -46,7 +44,6 @@
                     <div class="flex justify-between"><dt class="text-slate-500">Second Phone</dt><dd class="font-bold">{{ $customer->phone_2 ?: '-' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-500">Email</dt><dd class="font-bold">{{ $customer->email ?: '-' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-500">NIC</dt><dd class="font-bold">{{ $customer->nic ?: '-' }}</dd></div>
-                    <div class="flex justify-between"><dt class="text-slate-500">VAT No</dt><dd class="font-bold">{{ $customer->vat_no ?: '-' }}</dd></div>
                 </dl>
             </div>
         </div>

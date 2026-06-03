@@ -26,8 +26,8 @@
                 'amount' => Currency::formatLkr($cheque->amount),
                 'status' => ChequePresentation::statusLabel($cheque->status),
                 'status_class' => ChequePresentation::statusBadgeClass($cheque->status),
-                'type' => ChequePresentation::typeLabel($cheque->cheque_type),
-                'type_class' => ChequePresentation::typeBadgeClass($cheque->cheque_type),
+                'type' => ChequePresentation::displayTypeLabel($cheque),
+                'type_class' => ChequePresentation::displayTypeBadgeClass($cheque),
             ];
         })->values();
     });
@@ -165,7 +165,7 @@
                             <span class="rounded-full px-3 py-1 text-xs font-bold ring-1 {{ ChequePresentation::statusBadgeClass($cheque->status) }}">{{ ChequePresentation::statusLabel($cheque->status) }}</span>
                         </div>
                         <div class="mt-3 grid gap-2 text-sm">
-                            <div class="flex justify-between"><span class="text-slate-500">Type</span><strong>{{ ChequePresentation::typeLabel($cheque->cheque_type) }}</strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Type</span><strong>{{ ChequePresentation::displayTypeLabel($cheque) }}</strong></div>
                             <div class="flex justify-between"><span class="text-slate-500">Bank</span><strong>{{ $cheque->bank_name }}</strong></div>
                             <div class="flex justify-between"><span class="text-slate-500">Amount</span><strong class="text-primary">{{ Currency::formatLkr($cheque->amount) }}</strong></div>
                         </div>

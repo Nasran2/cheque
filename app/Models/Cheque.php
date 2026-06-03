@@ -70,6 +70,16 @@ class Cheque extends Model
         'is_transferred_to_supplier' => 'boolean',
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('exclude_transferred_supplier_duplicates', function ($builder) {
+            $builder->where(function ($query) {
+                $query->whereNull('supplier_cheque_mode')
+                    ->orWhere('supplier_cheque_mode', '!=', 'received_customer_cheque');
+            });
+        });
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -87,12 +97,12 @@ class Cheque extends Model
 
     public function sourceCustomerCheque()
     {
-        return $this->belongsTo(self::class, 'source_customer_cheque_id');
+        return $this->belongsTo(self::class, 'source_customer_cheque_id')->withoutGlobalScope('exclude_transferred_supplier_duplicates');
     }
 
     public function transferredCheques()
     {
-        return $this->hasMany(self::class, 'source_customer_cheque_id');
+        return $this->hasMany(self::class, 'source_customer_cheque_id')->withoutGlobalScope('exclude_transferred_supplier_duplicates');
     }
 
     public function supplier()

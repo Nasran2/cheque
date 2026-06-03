@@ -26,10 +26,6 @@
         <input type="email" name="email" value="{{ old('email', $supplier->email) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
     </div>
     <div>
-        <label class="mb-2 block text-sm font-bold text-navy">VAT No</label>
-        <input name="vat_no" value="{{ old('vat_no', $supplier->vat_no) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
-    </div>
-    <div>
         <label class="mb-2 block text-sm font-bold text-navy">Bank Name</label>
         <input name="bank_name" value="{{ old('bank_name', $supplier->bank_name) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
     </div>
@@ -44,10 +40,6 @@
     <div>
         <label class="mb-2 block text-sm font-bold text-navy">Account Number</label>
         <input name="account_no" value="{{ old('account_no', $supplier->account_no) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
-    </div>
-    <div>
-        <label class="mb-2 block text-sm font-bold text-navy">Opening Balance</label>
-        <input type="number" step="0.01" min="0" name="opening_balance" value="{{ old('opening_balance', $supplier->opening_balance ?? 0) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
     </div>
     <div>
         <label class="mb-2 block text-sm font-bold text-navy">Status</label>

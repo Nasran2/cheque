@@ -357,13 +357,26 @@ class ChequeController extends Controller
         return redirect()->route('cheques.index')->with('success', 'Cheque saved successfully.');
     }
 
-    public function show(Cheque $cheque): View
+    public function show(Cheque $cheque): View|\Illuminate\Http\RedirectResponse
     {
-        $cheque->load(['customer', 'supplier', 'sourceCustomerCheque.customer', 'originalCustomer', 'givenToSupplier']);
+        // If this is a child duplicate supplier cheque, redirect to the parent received cheque details
+        if ($cheque->cheque_type === Cheque::TYPE_OWN_ISSUED && $cheque->supplier_cheque_mode === 'received_customer_cheque' && $cheque->source_customer_cheque_id) {
+            $parentCheque = Cheque::find($cheque->source_customer_cheque_id);
+            if ($parentCheque) {
+                return redirect()->route('cheques.show', $parentCheque->id);
+            }
+        }
+
+        $cheque->load(['customer', 'supplier', 'sourceCustomerCheque.customer', 'originalCustomer', 'givenToSupplier', 'transactions.createdBy', 'auditLogs.user']);
         
         $transferredToCheque = null;
         if ($cheque->is_transferred_to_supplier) {
-            $transferredToCheque = Cheque::where('source_customer_cheque_id', $cheque->id)->first();
+            $transferredToCheque = Cheque::withoutGlobalScope('exclude_transferred_supplier_duplicates')
+                ->where('source_customer_cheque_id', $cheque->id)
+                ->first();
+            if ($transferredToCheque) {
+                $transferredToCheque->load(['supplier', 'transactions.createdBy', 'auditLogs.user']);
+            }
         }
 
         return view('cheques.show', compact('cheque', 'transferredToCheque'));

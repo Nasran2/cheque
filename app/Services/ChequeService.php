@@ -53,6 +53,46 @@ class ChequeService
             $this->recordAudit($cheque, 'updated', $oldValues, $changed, $user, null);
         }
 
+        // Sync changes to parent/child twin cheque
+        if ($cheque->is_transferred_to_supplier) {
+            $childCheque = Cheque::withoutGlobalScope('exclude_transferred_supplier_duplicates')
+                ->where('source_customer_cheque_id', $cheque->id)
+                ->first();
+            if ($childCheque) {
+                $syncData = Arr::only($data, ['cheque_no', 'bank_name', 'branch_name', 'cheque_date', 'amount']);
+                if (!empty($syncData)) {
+                    $needsUpdate = false;
+                    foreach ($syncData as $key => $val) {
+                        if ($childCheque->{$key} != $val) {
+                            $needsUpdate = true;
+                            break;
+                        }
+                    }
+                    if ($needsUpdate) {
+                        $this->update($childCheque, $syncData, $user, $attachment);
+                    }
+                }
+            }
+        } elseif ($cheque->source_customer_cheque_id) {
+            $parentCheque = Cheque::withoutGlobalScope('exclude_transferred_supplier_duplicates')
+                ->find($cheque->source_customer_cheque_id);
+            if ($parentCheque) {
+                $syncData = Arr::only($data, ['cheque_no', 'bank_name', 'branch_name', 'cheque_date', 'amount']);
+                if (!empty($syncData)) {
+                    $needsUpdate = false;
+                    foreach ($syncData as $key => $val) {
+                        if ($parentCheque->{$key} != $val) {
+                            $needsUpdate = true;
+                            break;
+                        }
+                    }
+                    if ($needsUpdate) {
+                        $this->update($parentCheque, $syncData, $user, $attachment);
+                    }
+                }
+            }
+        }
+
         return $cheque;
     }
 
@@ -106,6 +146,23 @@ class ChequeService
         );
 
         $this->recordLedger($cheque, $newStatus, $oldStatus, $user);
+
+        // Sync status to child twin cheque
+        if ($cheque->is_transferred_to_supplier) {
+            $childCheque = Cheque::withoutGlobalScope('exclude_transferred_supplier_duplicates')
+                ->where('source_customer_cheque_id', $cheque->id)
+                ->first();
+            if ($childCheque && $childCheque->status !== $newStatus) {
+                $this->changeStatus($childCheque, $newStatus, $meta, $user);
+            }
+        } elseif ($cheque->source_customer_cheque_id) {
+            // Sync status to parent twin cheque
+            $parentCheque = Cheque::withoutGlobalScope('exclude_transferred_supplier_duplicates')
+                ->find($cheque->source_customer_cheque_id);
+            if ($parentCheque && $parentCheque->status !== $newStatus) {
+                $this->changeStatus($parentCheque, $newStatus, $meta, $user);
+            }
+        }
 
         return $cheque;
     }

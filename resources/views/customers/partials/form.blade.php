@@ -30,20 +30,8 @@
         <input name="nic" value="{{ old('nic', $customer->nic) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
     </div>
     <div>
-        <label class="mb-2 block text-sm font-bold text-navy">VAT No</label>
-        <input name="vat_no" value="{{ old('vat_no', $customer->vat_no) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
-    </div>
-    <div>
         <label class="mb-2 block text-sm font-bold text-navy">City</label>
         <input name="city" value="{{ old('city', $customer->city) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
-    </div>
-    <div>
-        <label class="mb-2 block text-sm font-bold text-navy">Opening Balance</label>
-        <input type="number" step="0.01" min="0" name="opening_balance" value="{{ old('opening_balance', $customer->opening_balance ?? 0) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
-    </div>
-    <div>
-        <label class="mb-2 block text-sm font-bold text-navy">Credit Limit</label>
-        <input type="number" step="0.01" min="0" name="credit_limit" value="{{ old('credit_limit', $customer->credit_limit) }}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
     </div>
     <div>
         <label class="mb-2 block text-sm font-bold text-navy">Status</label>

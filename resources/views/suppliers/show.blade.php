@@ -33,7 +33,6 @@
             <div class="rounded-3xl bg-white p-5 shadow-soft">
                 <h4 class="mb-4 font-extrabold text-navy">Payable Details</h4>
                 <dl class="space-y-3 text-sm">
-                    <div class="flex justify-between"><dt class="text-slate-500">Opening Balance</dt><dd class="font-bold">{{ Currency::formatLkr($supplier->opening_balance) }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-500">Current Payable</dt><dd class="font-bold text-purplePay">{{ Currency::formatLkr($supplier->current_balance) }}</dd></div>
                 </dl>
             </div>
@@ -56,7 +55,6 @@
                     <div class="flex justify-between"><dt class="text-slate-500">Phone</dt><dd class="font-bold">{{ $supplier->phone ?: '-' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-500">Second Phone</dt><dd class="font-bold">{{ $supplier->phone_2 ?: '-' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-500">Email</dt><dd class="font-bold">{{ $supplier->email ?: '-' }}</dd></div>
-                    <div class="flex justify-between"><dt class="text-slate-500">VAT No</dt><dd class="font-bold">{{ $supplier->vat_no ?: '-' }}</dd></div>
                 </dl>
             </div>
             <div class="rounded-3xl bg-white p-5 shadow-soft">

@@ -13,6 +13,8 @@ class CustomerController extends Controller
     public function index(Request $request): View
     {
         $customers = Customer::query()
+            ->withCount('cheques')
+            ->withSum('cheques as cheque_total_amount', 'amount')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 

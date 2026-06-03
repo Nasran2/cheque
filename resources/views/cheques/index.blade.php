@@ -166,8 +166,8 @@
                     </div>
 
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <span class="rounded-full px-3 py-1 text-xs font-bold ring-1 {{ ChequePresentation::typeBadgeClass($cheque->cheque_type) }}">
-                            {{ ChequePresentation::typeLabel($cheque->cheque_type) }}
+                        <span class="rounded-full px-3 py-1 text-xs font-bold ring-1 {{ ChequePresentation::displayTypeBadgeClass($cheque) }}">
+                            {{ ChequePresentation::displayTypeLabel($cheque) }}
                         </span>
                     </div>
 
@@ -209,10 +209,10 @@
                             <td class="px-5 py-4 font-bold text-navy">{{ $cheque->cheque_no }}</td>
                             <td>
                                 <span class="inline-flex items-center gap-2">
-                                    <span class="flex h-7 w-7 items-center justify-center rounded-full {{ $cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED ? 'bg-teal/10 text-teal' : ($cheque->cheque_type === Cheque::TYPE_OWN_ISSUED ? 'bg-primary/10 text-primary' : 'bg-amber-100 text-amber-700') }}">
-                                        <i class="fa-solid {{ $cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED ? 'fa-arrow-down' : ($cheque->cheque_type === Cheque::TYPE_OWN_ISSUED ? 'fa-arrow-up' : 'fa-share') }} text-xs"></i>
+                                    <span class="flex h-7 w-7 items-center justify-center rounded-full {{ ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED && $cheque->is_transferred_to_supplier) ? 'bg-amber-100 text-amber-700' : ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED ? 'bg-teal/10 text-teal' : 'bg-primary/10 text-primary') }}">
+                                        <i class="fa-solid {{ ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED && $cheque->is_transferred_to_supplier) ? 'fa-share' : ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED ? 'fa-arrow-down' : 'fa-arrow-up') }} text-xs"></i>
                                     </span>
-                                    {{ ChequePresentation::typeLabel($cheque->cheque_type) }}
+                                    {{ ChequePresentation::displayTypeLabel($cheque) }}
                                 </span>
                             </td>
                             <td>

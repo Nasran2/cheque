@@ -34,7 +34,7 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <x-dashboard-card icon="fa-regular fa-rectangle-list" title="Total Cheques" :count="$summary['total_count']" :amount="$summary['total_amount']" color="primary" sub="Total Value" />
         <x-dashboard-card icon="fa-regular fa-clock" title="Pending" :count="$summary['pending_count']" :amount="$summary['pending_amount']" color="warning" sub="Amount" />
         <x-dashboard-card icon="fa-regular fa-circle-check" title="Passed" :count="$summary['passed_count']" :amount="$summary['passed_amount']" color="success" sub="Amount" />
@@ -43,11 +43,11 @@
         <x-dashboard-card icon="fa-solid fa-arrow-up" title="Amount to Pay" :count="null" :amount="$summary['amount_to_pay']" color="purplePay" sub="To Suppliers" />
     </div>
 
-    <div class="mt-6 grid gap-6 2xl:grid-cols-[1fr_560px]">
-        <section id="recent-cheques" class="rounded-3xl bg-white p-5 shadow-soft">
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section id="recent-cheques" class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40 lg:col-span-2">
             <div class="mb-4 flex items-center justify-between">
                 <h3 class="text-lg font-extrabold text-navy">Recent Cheques</h3>
-                <a href="#recent-cheques" class="text-sm font-bold text-primary">View All</a>
+                <a href="{{ route('cheques.index') }}" class="text-sm font-bold text-primary">View All</a>
             </div>
 
             <div class="space-y-3 lg:hidden">
@@ -118,62 +118,36 @@
             </div>
         </section>
 
-        <div class="grid gap-6 lg:grid-cols-2 2xl:grid-cols-1">
-            <section id="upcoming-cheques" class="rounded-3xl bg-white p-5 shadow-soft">
-                <div class="mb-4 flex items-center justify-between">
-                    <h3 class="text-lg font-extrabold text-navy">Upcoming Cheques</h3>
-                    <a href="#upcoming-cheques" class="text-sm font-bold text-primary">View All</a>
-                </div>
-                <div class="divide-y divide-slate-100">
-                    @forelse ($upcomingCheques as $cheque)
-                        <div class="grid grid-cols-[34px_1fr_auto] gap-3 py-3 text-sm">
-                            <i class="fa-regular fa-calendar-days pt-1 text-primary"></i>
-                            <div>
-                                <p class="font-bold text-navy">{{ $cheque->cheque_no }}</p>
-                                <p class="text-xs text-slate-500">{{ $cheque->customer?->name ?? $cheque->supplier?->name ?? $cheque->bank_name }}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-slate-500">{{ $cheque->cheque_date?->format('d M Y') }}</p>
-                                <p class="font-bold text-navy">{{ Currency::formatLkr($cheque->amount) }}</p>
-                            </div>
+        <section id="upcoming-cheques" class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40 lg:col-span-1">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-extrabold text-navy">Upcoming Cheques</h3>
+                <a href="{{ route('cheques.upcoming') }}" class="text-sm font-bold text-primary">View All</a>
+            </div>
+            <div class="divide-y divide-slate-100">
+                @forelse ($upcomingCheques as $cheque)
+                    <div class="grid grid-cols-[34px_1fr_auto] gap-3 py-3 text-sm">
+                        <i class="fa-regular fa-calendar-days pt-1 text-primary"></i>
+                        <div>
+                            <p class="font-bold text-navy">{{ $cheque->cheque_no }}</p>
+                            <p class="text-xs text-slate-500">{{ $cheque->customer?->name ?? $cheque->supplier?->name ?? $cheque->bank_name }}</p>
                         </div>
-                    @empty
-                        <p class="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">No upcoming cheques.</p>
-                    @endforelse
-                </div>
-            </section>
-
-            <section id="overdue-cheques" class="rounded-3xl bg-white p-5 shadow-soft">
-                <div class="mb-4 flex items-center justify-between">
-                    <h3 class="text-lg font-extrabold text-navy">Overdue Alerts</h3>
-                    <a href="#overdue-cheques" class="text-sm font-bold text-primary">View All</a>
-                </div>
-                <div class="divide-y divide-slate-100">
-                    @forelse ($overdueCheques as $cheque)
-                        <div class="grid grid-cols-[34px_1fr_auto] gap-3 py-3 text-sm">
-                            <i class="fa-solid fa-triangle-exclamation pt-1 text-danger"></i>
-                            <div>
-                                <p class="font-bold text-navy">{{ $cheque->cheque_no }}</p>
-                                <p class="text-xs text-slate-500">{{ $cheque->customer?->name ?? $cheque->supplier?->name ?? $cheque->bank_name }}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-slate-500">{{ $cheque->cheque_date?->format('d M Y') }}</p>
-                                <p class="font-bold text-danger">{{ Currency::formatLkr($cheque->amount) }}</p>
-                            </div>
+                        <div class="text-right">
+                            <p class="text-slate-500">{{ $cheque->cheque_date?->format('d M Y') }}</p>
+                            <p class="font-bold text-navy">{{ Currency::formatLkr($cheque->amount) }}</p>
                         </div>
-                    @empty
-                        <p class="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">No overdue cheques.</p>
-                    @endforelse
-                </div>
-            </section>
-        </div>
+                    </div>
+                @empty
+                    <p class="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">No upcoming cheques.</p>
+                @endforelse
+            </div>
+        </section>
     </div>
 
-    <div class="mt-6 grid gap-6 xl:grid-cols-[1fr_1fr_1.2fr_1.45fr] 2xl:grid-cols-[1fr_1fr_1.2fr_1.45fr_380px]">
-        <section class="rounded-3xl bg-white p-5 shadow-soft">
+    <div class="mt-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <section class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40">
             <h3 class="text-lg font-extrabold text-navy">Customer Due Summary</h3>
             <div class="mt-5 flex items-center gap-4">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <i class="fa-solid fa-users text-xl"></i>
                 </div>
                 <div>
@@ -185,10 +159,10 @@
             <p class="text-2xl font-extrabold text-primary">{{ Currency::formatLkr($summary['amount_to_receive']) }}</p>
         </section>
 
-        <section class="rounded-3xl bg-white p-5 shadow-soft">
+        <section class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40">
             <h3 class="text-lg font-extrabold text-navy">Supplier Payable Summary</h3>
             <div class="mt-5 flex items-center gap-4">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-purplePay text-white">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-purplePay/10 text-purplePay">
                     <i class="fa-solid fa-cart-flatbed text-xl"></i>
                 </div>
                 <div>
@@ -200,7 +174,7 @@
             <p class="text-2xl font-extrabold text-purplePay">{{ Currency::formatLkr($summary['amount_to_pay']) }}</p>
         </section>
 
-        <section id="status-chart" class="rounded-3xl bg-white p-5 shadow-soft">
+        <section id="status-chart" class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40">
             <h3 class="text-lg font-extrabold text-navy">Cheque Status Distribution</h3>
             <div class="mt-5 flex items-center gap-5">
                 <div class="relative flex h-32 w-32 shrink-0 items-center justify-center rounded-full" style="background: conic-gradient(
@@ -229,7 +203,7 @@
             </div>
         </section>
 
-        <section id="monthly-chart" class="rounded-3xl bg-white p-5 shadow-soft">
+        <section id="monthly-chart" class="rounded-3xl bg-white p-6 md:p-8 shadow-soft border border-slate-100/40">
             <h3 class="text-lg font-extrabold text-navy">Monthly Cheque Totals</h3>
             <div class="mt-6 flex h-48 items-end gap-3 border-b border-slate-100">
                 @foreach ($months as $month)
@@ -245,117 +219,7 @@
                 @endforeach
             </div>
         </section>
-
-        <section id="add-cheque" class="rounded-3xl bg-white p-5 shadow-soft xl:col-span-4 2xl:col-span-1 2xl:row-span-2">
-            <div class="mb-4 flex items-center justify-between">
-                <h3 class="text-lg font-extrabold text-navy">Add Cheque</h3>
-                <i class="fa-solid fa-up-right-from-square text-slate-400"></i>
-            </div>
-
-            <form method="POST" action="{{ route('cheques.store') }}" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="mb-2 block text-xs font-bold text-navy">Cheque Type <span class="text-danger">*</span></label>
-                    <select name="cheque_type" id="chequeType" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" required>
-                        <option value="{{ Cheque::TYPE_CUSTOMER_RECEIVED }}">Received (From Customer)</option>
-                        <option value="{{ Cheque::TYPE_OWN_ISSUED }}">Issued (To Supplier)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="mb-2 block text-xs font-bold text-navy">Cheque Number <span class="text-danger">*</span></label>
-                    <input name="cheque_no" value="{{ old('cheque_no') }}" placeholder="Enter cheque number" class="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" required>
-                </div>
-
-                <div class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-1">
-                    <div>
-                        <label class="mb-2 block text-xs font-bold text-navy">Bank <span class="text-danger">*</span></label>
-                        <input name="bank_name" value="{{ old('bank_name') }}" placeholder="Enter bank" class="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" required>
-                    </div>
-                </div>
-
-                <div class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-1">
-                    <div>
-                        <label class="mb-2 block text-xs font-bold text-navy">Date <span class="text-danger">*</span></label>
-                        <input type="date" name="cheque_date" value="{{ old('cheque_date', now()->toDateString()) }}" class="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" required>
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-xs font-bold text-navy">Amount <span class="text-danger">*</span></label>
-                        <input type="number" step="0.01" min="0.01" name="amount" value="{{ old('amount') }}" placeholder="Enter amount" class="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" required>
-                    </div>
-                </div>
-
-                <input type="hidden" name="supplier_cheque_mode" value="own_cheque">
-
-                <div id="dashboardCustomerContainer">
-                    <label class="mb-2 block text-xs font-bold text-navy">Customer <span class="text-danger">*</span></label>
-                    <select name="customer_id" id="dashboardCustomerSelect" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
-                        <option value="">Select customer</option>
-                            @foreach ($customers as $customer)
-                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                            @endforeach
-                    </select>
-                </div>
-
-                <div id="dashboardSupplierContainer" class="hidden">
-                    <label class="mb-2 block text-xs font-bold text-navy">Supplier <span class="text-danger">*</span></label>
-                    <select name="supplier_id" id="dashboardSupplierSelect" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
-                        <option value="">Select supplier</option>
-                            @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                            @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="mb-2 block text-xs font-bold text-navy">Status <span class="text-danger">*</span></label>
-                    <select name="status" id="dashboardStatusSelect" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" required>
-                        <option value="{{ Cheque::STATUS_PENDING }}">Pending</option>
-                        <option value="{{ Cheque::STATUS_DEPOSITED }}" id="dashboardDepositedOption">Deposited</option>
-                        <option value="{{ Cheque::STATUS_PASSED }}">Passed</option>
-                        <option value="{{ Cheque::STATUS_RETURNED }}">Returned</option>
-                        <option value="{{ Cheque::STATUS_CANCELLED }}">Cancelled</option>
-                        <option value="{{ Cheque::STATUS_HOLD }}">Hold</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:bg-blue-700">
-                    <i class="fa-regular fa-calendar-check"></i>
-                    Save Cheque
-                </button>
-            </form>
-        </section>
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        const chequeType = document.getElementById('chequeType');
-        const dashboardCustomerContainer = document.getElementById('dashboardCustomerContainer');
-        const dashboardSupplierContainer = document.getElementById('dashboardSupplierContainer');
-        const dashboardCustomerSelect = document.getElementById('dashboardCustomerSelect');
-        const dashboardSupplierSelect = document.getElementById('dashboardSupplierSelect');
-        const dashboardStatusSelect = document.getElementById('dashboardStatusSelect');
-        const dashboardDepositedOption = document.getElementById('dashboardDepositedOption');
 
-        function syncPartyOptions() {
-            if (!chequeType || !dashboardCustomerContainer || !dashboardSupplierContainer) return;
-
-            const isCustomerReceived = chequeType.value === '{{ Cheque::TYPE_CUSTOMER_RECEIVED }}';
-
-            dashboardCustomerContainer.classList.toggle('hidden', !isCustomerReceived);
-            dashboardSupplierContainer.classList.toggle('hidden', isCustomerReceived);
-            dashboardCustomerSelect.required = isCustomerReceived;
-            dashboardSupplierSelect.required = !isCustomerReceived;
-
-            dashboardDepositedOption.hidden = !isCustomerReceived;
-            dashboardDepositedOption.disabled = !isCustomerReceived;
-            if (!isCustomerReceived && dashboardStatusSelect.value === '{{ Cheque::STATUS_DEPOSITED }}') {
-                dashboardStatusSelect.value = '{{ Cheque::STATUS_PENDING }}';
-            }
-        }
-
-        chequeType?.addEventListener('change', syncPartyOptions);
-        syncPartyOptions();
-    </script>
-@endpush
