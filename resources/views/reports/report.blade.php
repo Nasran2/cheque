@@ -153,7 +153,7 @@
     </form>
 
     {{-- ── Summary Cards ────────────────────────────────────────────────── --}}
-    <div class="mb-5 grid grid-cols-2 gap-4 xl:grid-cols-4">
+    <div class="mb-4 grid grid-cols-2 gap-4 xl:grid-cols-4">
         <div class="rounded-3xl bg-white p-5 shadow-soft">
             <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Total Cheques</p>
             <h4 class="mt-2 text-3xl font-extrabold text-navy">{{ number_format($totalCount) }}</h4>
@@ -173,6 +173,24 @@
             <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Own Issued</p>
             <h4 class="mt-2 text-xl font-extrabold text-purplePay">{{ Currency::formatLkr($ownAmount) }}</h4>
             <p class="mt-1 text-xs text-purplePay font-bold">Outflow</p>
+        </div>
+    </div>
+    
+    <div class="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <div class="rounded-3xl bg-white p-5 shadow-soft">
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Pending Amount</p>
+            <h4 class="mt-2 text-xl font-extrabold text-warning">{{ Currency::formatLkr($pendingAmount) }}</h4>
+            <p class="mt-1 text-xs text-warning font-bold">Awaiting Clearance</p>
+        </div>
+        <div class="rounded-3xl bg-white p-5 shadow-soft">
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Passed Amount</p>
+            <h4 class="mt-2 text-xl font-extrabold text-success">{{ Currency::formatLkr($passedAmount) }}</h4>
+            <p class="mt-1 text-xs text-success font-bold">Cleared successfully</p>
+        </div>
+        <div class="rounded-3xl bg-white p-5 shadow-soft col-span-2 lg:col-span-1">
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-400">Returned Amount</p>
+            <h4 class="mt-2 text-xl font-extrabold text-danger">{{ Currency::formatLkr($returnedAmount) }}</h4>
+            <p class="mt-1 text-xs text-danger font-bold">Bounced / Returned</p>
         </div>
     </div>
 
@@ -197,6 +215,21 @@
                         <div class="text-right">
                             <p class="text-lg font-extrabold text-purplePay">{{ Currency::formatLkr($group['amount']) }}</p>
                             <p class="text-xs text-slate-400">total value</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-3 border-b border-slate-100 bg-white px-5 py-4">
+                        <div class="rounded-2xl bg-warning/10 px-4 py-3">
+                            <p class="text-xs text-warning">Pending</p>
+                            <p class="text-base font-extrabold text-warning">{{ Currency::formatLkr($group['pending']) }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-success/10 px-4 py-3">
+                            <p class="text-xs text-success">Passed</p>
+                            <p class="text-base font-extrabold text-success">{{ Currency::formatLkr($group['passed']) }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-danger/10 px-4 py-3">
+                            <p class="text-xs text-danger">Returned</p>
+                            <p class="text-base font-extrabold text-danger">{{ Currency::formatLkr($group['returned']) }}</p>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -271,7 +304,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 border-b border-slate-100 bg-white px-5 py-4 md:grid-cols-3">
+                    <div class="grid grid-cols-2 gap-3 border-b border-slate-100 bg-white px-5 py-4 md:grid-cols-5">
                         <div class="rounded-2xl bg-slate-50 px-4 py-3">
                             <p class="text-xs text-slate-400">Cheque Count</p>
                             <p class="text-base font-extrabold text-navy">{{ number_format($group['count']) }}</p>
@@ -283,6 +316,14 @@
                         <div class="rounded-2xl bg-purplePay/10 px-4 py-3">
                             <p class="text-xs text-purplePay">Own Issued</p>
                             <p class="text-base font-extrabold text-purplePay">{{ Currency::formatLkr($group['own']) }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-warning/10 px-4 py-3">
+                            <p class="text-xs text-warning">Pending</p>
+                            <p class="text-base font-extrabold text-warning">{{ Currency::formatLkr($group['pending']) }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-success/10 px-4 py-3">
+                            <p class="text-xs text-success">Passed</p>
+                            <p class="text-base font-extrabold text-success">{{ Currency::formatLkr($group['passed']) }}</p>
                         </div>
                     </div>
 
@@ -340,7 +381,7 @@
                         <h4 class="text-base font-extrabold text-navy">{{ $group['label'] }}</h4>
                         <span class="text-sm text-slate-400">{{ $group['count'] }} cheque(s)</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-3 mb-4">
+                    <div class="grid grid-cols-2 gap-3 mb-4 md:grid-cols-5">
                         <div class="rounded-2xl bg-slate-50 px-4 py-3">
                             <p class="text-xs text-slate-400">Total</p>
                             <p class="text-base font-extrabold text-navy">{{ Currency::formatLkr($group['amount']) }}</p>
@@ -352,6 +393,14 @@
                         <div class="rounded-2xl bg-purplePay/10 px-4 py-3">
                             <p class="text-xs text-purplePay">Own Issued</p>
                             <p class="text-base font-extrabold text-purplePay">{{ Currency::formatLkr($group['own']) }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-warning/10 px-4 py-3">
+                            <p class="text-xs text-warning">Pending</p>
+                            <p class="text-base font-extrabold text-warning">{{ Currency::formatLkr($group['pending']) }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-success/10 px-4 py-3">
+                            <p class="text-xs text-success">Passed</p>
+                            <p class="text-base font-extrabold text-success">{{ Currency::formatLkr($group['passed']) }}</p>
                         </div>
                     </div>
                     {{-- Progress bar --}}

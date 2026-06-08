@@ -324,9 +324,12 @@ class ReportController extends Controller
         if ($key === 'bank-wise') {
             $allForGroup = $this->buildQuery($request, $meta)->latest('cheque_date')->get();
             $bankGroups = $allForGroup->groupBy('bank_name')->map(fn ($g) => [
-                'cheques' => $g,
-                'count'   => $g->count(),
-                'amount'  => $g->sum('amount'),
+                'cheques'  => $g,
+                'count'    => $g->count(),
+                'amount'   => $g->sum('amount'),
+                'pending'  => $g->where('status', Cheque::STATUS_PENDING)->sum('amount'),
+                'passed'   => $g->where('status', Cheque::STATUS_PASSED)->sum('amount'),
+                'returned' => $g->where('status', Cheque::STATUS_RETURNED)->sum('amount'),
             ])->sortByDesc(fn ($g) => $g['amount']);
         }
 
@@ -347,6 +350,9 @@ class ReportController extends Controller
                     'amount'   => $g->sum('amount'),
                     'customer' => $g->where('cheque_type', Cheque::TYPE_CUSTOMER_RECEIVED)->sum('amount'),
                     'own'      => $g->where('cheque_type', Cheque::TYPE_OWN_ISSUED)->sum('amount'),
+                    'pending'  => $g->where('status', Cheque::STATUS_PENDING)->sum('amount'),
+                    'passed'   => $g->where('status', Cheque::STATUS_PASSED)->sum('amount'),
+                    'returned' => $g->where('status', Cheque::STATUS_RETURNED)->sum('amount'),
                 ])
                 ->sortKeysDesc();
         }
@@ -362,6 +368,9 @@ class ReportController extends Controller
             'totalCount'     => $totalQuery->count(),
             'customerAmount' => $customerQuery->where('cheque_type', Cheque::TYPE_CUSTOMER_RECEIVED)->sum('amount'),
             'ownAmount'      => $ownQuery->where('cheque_type', Cheque::TYPE_OWN_ISSUED)->sum('amount'),
+            'pendingAmount'  => (clone $totalQuery)->where('status', Cheque::STATUS_PENDING)->sum('amount'),
+            'passedAmount'   => (clone $totalQuery)->where('status', Cheque::STATUS_PASSED)->sum('amount'),
+            'returnedAmount' => (clone $totalQuery)->where('status', Cheque::STATUS_RETURNED)->sum('amount'),
             'banks'          => Cheque::distinct()->orderBy('bank_name')->pluck('bank_name'),
             'reports'        => $this->reports(),
         ]);
@@ -407,6 +416,18 @@ class ReportController extends Controller
             ->when($request->filled('amount_min'),  fn ($q) => $q->where('amount', '>=', $request->amount_min))
             ->when($request->filled('amount_max'),  fn ($q) => $q->where('amount', '<=', $request->amount_max));
 
+        if ($meta['route'] === 'reports.customer-wise') {
+            $query->where(function ($q) {
+                $q->whereNotNull('customer_id')
+                  ->orWhereNotNull('original_customer_id');
+            });
+        } elseif ($meta['route'] === 'reports.supplier-wise') {
+            $query->where(function ($q) {
+                $q->whereNotNull('supplier_id')
+                  ->orWhereNotNull('given_to_supplier_id');
+            });
+        }
+
         return $query;
     }
 
@@ -430,6 +451,9 @@ class ReportController extends Controller
                 'amount' => $g->sum('amount'),
                 'customer' => $g->where('cheque_type', Cheque::TYPE_CUSTOMER_RECEIVED)->sum('amount'),
                 'own' => $g->where('cheque_type', Cheque::TYPE_OWN_ISSUED)->sum('amount'),
+                'pending' => $g->where('status', Cheque::STATUS_PENDING)->sum('amount'),
+                'passed' => $g->where('status', Cheque::STATUS_PASSED)->sum('amount'),
+                'returned' => $g->where('status', Cheque::STATUS_RETURNED)->sum('amount'),
             ])
             ->sortByDesc(fn ($g) => $g['amount']);
     }

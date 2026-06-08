@@ -53,14 +53,18 @@
                     <span class="text-sm text-slate-500">Current Payable</span>
                     <strong class="text-purplePay">{{ Currency::formatLkr($supplier->current_balance) }}</strong>
                 </div>
-                <div class="mt-3 grid grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-3">
+                <div class="mt-3 grid grid-cols-3 gap-3 rounded-2xl bg-slate-50 p-3">
                     <div>
                         <span class="block text-xs font-semibold text-slate-400">Cheques</span>
                         <strong class="text-sm text-navy">{{ number_format($supplier->cheques_count) }}</strong>
                     </div>
+                    <div>
+                        <span class="block text-xs font-semibold text-slate-400">Pending</span>
+                        <strong class="text-sm text-warning">{{ Currency::formatLkr($supplier->pending_amount ?? 0) }}</strong>
+                    </div>
                     <div class="text-right">
-                        <span class="block text-xs font-semibold text-slate-400">Cheque Total</span>
-                        <strong class="text-sm text-primary">{{ Currency::formatLkr($supplier->cheque_total_amount ?? 0) }}</strong>
+                        <span class="block text-xs font-semibold text-slate-400">Passed</span>
+                        <strong class="text-sm text-success">{{ Currency::formatLkr($supplier->passed_amount ?? 0) }}</strong>
                     </div>
                 </div>
                 <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -88,8 +92,8 @@
                     <th>Phone</th>
                     <th>Bank</th>
                     <th>Cheques</th>
-                    <th>Cheque Total</th>
-                    <th>Payable</th>
+                    <th>Pending Amount</th>
+                    <th>Passed Amount</th>
                     <th>Status</th>
                     <th class="text-right pr-5">Actions</th>
                 </tr>
@@ -107,8 +111,8 @@
                                 {{ number_format($supplier->cheques_count) }}
                             </a>
                         </td>
-                        <td class="font-bold text-primary">{{ Currency::formatLkr($supplier->cheque_total_amount ?? 0) }}</td>
-                        <td class="font-bold text-purplePay">{{ Currency::formatLkr($supplier->current_balance) }}</td>
+                        <td class="font-bold text-warning">{{ Currency::formatLkr($supplier->pending_amount ?? 0) }}</td>
+                        <td class="font-bold text-success">{{ Currency::formatLkr($supplier->passed_amount ?? 0) }}</td>
                         <td>
                             <span class="rounded-full px-3 py-1 text-xs font-bold {{ $supplier->status === 'active' ? 'bg-green-100 text-success' : 'bg-red-100 text-danger' }}">
                                 {{ ucfirst($supplier->status) }}

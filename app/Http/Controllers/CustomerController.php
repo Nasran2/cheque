@@ -14,7 +14,8 @@ class CustomerController extends Controller
     {
         $customers = Customer::query()
             ->withCount('cheques')
-            ->withSum('cheques as cheque_total_amount', 'amount')
+            ->withSum(['cheques as pending_amount' => fn($q) => $q->where('status', \App\Models\Cheque::STATUS_PENDING)], 'amount')
+            ->withSum(['cheques as passed_amount' => fn($q) => $q->where('status', \App\Models\Cheque::STATUS_PASSED)], 'amount')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
