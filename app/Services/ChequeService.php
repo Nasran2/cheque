@@ -31,6 +31,32 @@ class ChequeService
         $this->recordAudit($cheque, 'created', [], $cheque->toArray(), $user, null);
         $this->recordLedger($cheque, $cheque->status, null, $user);
 
+        if ($cheque->cheque_type === Cheque::TYPE_CUSTOMER_RECEIVED && \App\Models\ChequeSetting::getValue('received_cheque_sms_enabled', '0') === '1') {
+            $sms = app(\App\Services\TextitSmsService::class);
+            $template = \App\Models\SmsTemplate::getByKey('customer_cheque_received');
+            $phone = $cheque->customer?->phone;
+
+            if ($phone && $template && $template->isActive()) {
+                $companyName = \App\Models\ChequeSetting::getValue('company_name', 'Cheque Management System');
+                $vars = [
+                    'company_name'  => $companyName,
+                    'system_name'   => $companyName,
+                    'customer_name' => $cheque->customer?->name ?? '',
+                    'cheque_no'     => $cheque->cheque_no,
+                    'amount'        => $cheque->amount,
+                ];
+                $message = $sms->replaceVars($template->message, $vars);
+                $ref = substr(\App\Models\ChequeSetting::getValue('sms_ref_prefix', 'CHEQUE') . '-' . $cheque->cheque_no, 0, 15);
+                
+                $sms->sendSms($phone, $message, $ref, null, [
+                    'cheque_id'       => $cheque->id,
+                    'sms_template_id' => $template->id,
+                    'recipient_type'  => 'customer',
+                    'recipient_id'    => $cheque->customer_id,
+                ]);
+            }
+        }
+
         return $cheque;
     }
 

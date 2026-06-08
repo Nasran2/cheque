@@ -11,6 +11,12 @@ class SmsTemplateSeeder extends Seeder
     {
         $templates = [
             [
+                'template_key'  => 'customer_cheque_received',
+                'template_name' => 'Customer Cheque Received',
+                'message'       => 'Dear {customer_name}, we have received your cheque no {cheque_no} for {amount}. Thank you. {company_name}',
+                'status'        => 'active',
+            ],
+            [
                 'template_key'  => 'customer_cheque_reminder',
                 'template_name' => 'Customer Cheque Reminder',
                 'message'       => 'Dear {customer_name}, your cheque no {cheque_no} for {amount} is due on {cheque_date}. Please ensure funds are available. {company_name}',

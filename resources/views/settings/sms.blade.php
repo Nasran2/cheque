@@ -163,6 +163,7 @@
                     <div class="grid gap-3 sm:grid-cols-2">
                         @php
                             $toggles = [
+                                'received_cheque_sms_enabled'   => ['Received Cheque SMS',        'Send SMS when cheque is added',        'fa-hand-holding-dollar', 'text-indigo-500'],
                                 'customer_reminder_sms_enabled' => ['Customer Cheque Reminders',  'Send SMS when customer cheque is due', 'fa-users', 'text-primary'],
                                 'supplier_reminder_sms_enabled' => ['Supplier Cheque Reminders',  'Send SMS when own cheque is due',      'fa-truck-field', 'text-teal'],
                                 'returned_cheque_sms_enabled'   => ['Returned Cheque SMS',        'Send SMS when cheque is returned',     'fa-rotate-left', 'text-danger'],

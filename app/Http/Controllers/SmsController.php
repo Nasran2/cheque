@@ -41,6 +41,7 @@ class SmsController extends Controller
             'sms_method'                    => ['nullable', 'in:GET,POST'],
             'sms_ref_prefix'                => ['nullable', 'string', 'max:10'],
             'daily_sms_time'                => ['nullable', 'regex:/^\d{2}:\d{2}$/'],
+            'received_cheque_sms_enabled'   => ['sometimes', 'boolean'],
             'customer_reminder_sms_enabled' => ['sometimes', 'boolean'],
             'supplier_reminder_sms_enabled' => ['sometimes', 'boolean'],
             'returned_cheque_sms_enabled'   => ['sometimes', 'boolean'],
@@ -49,7 +50,7 @@ class SmsController extends Controller
         ]);
 
         $booleans = [
-            'sms_enabled', 'customer_reminder_sms_enabled', 'supplier_reminder_sms_enabled',
+            'sms_enabled', 'received_cheque_sms_enabled', 'customer_reminder_sms_enabled', 'supplier_reminder_sms_enabled',
             'returned_cheque_sms_enabled', 'passed_cheque_sms_enabled', 'overdue_cheque_sms_enabled',
         ];
 
@@ -223,6 +224,7 @@ class SmsController extends Controller
             'sms_method'                    => ['label' => 'HTTP Method',                 'type' => 'select',  'default' => 'GET'],
             'sms_ref_prefix'                => ['label' => 'Reference Prefix',            'type' => 'text',    'default' => 'CHEQUE'],
             'daily_sms_time'                => ['label' => 'Daily SMS Send Time',         'type' => 'time',    'default' => '09:00'],
+            'received_cheque_sms_enabled'   => ['label' => 'Received Cheque SMS',         'type' => 'boolean', 'default' => '0'],
             'customer_reminder_sms_enabled' => ['label' => 'Customer Reminder SMS',       'type' => 'boolean', 'default' => '0'],
             'supplier_reminder_sms_enabled' => ['label' => 'Supplier Reminder SMS',       'type' => 'boolean', 'default' => '0'],
             'returned_cheque_sms_enabled'   => ['label' => 'Returned Cheque SMS',         'type' => 'boolean', 'default' => '0'],
