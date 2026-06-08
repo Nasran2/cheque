@@ -175,10 +175,7 @@
                         <a href="{{ route('cheques.show', $cheque->id) }}" class="rounded-xl bg-primary text-white px-3 py-2 text-center text-xs font-bold">View</a>
                         <a href="#" class="rounded-xl bg-slate-100 text-slate-700 px-3 py-2 text-center text-xs font-bold">Edit</a>
                         @if (in_array($cheque->status, $actionableStatuses, true))
-                            <form method="POST" action="{{ route('cheques.mark-passed', $cheque) }}" onsubmit="return confirm('Mark cheque {{ $cheque->cheque_no }} as passed?')">
-                                @csrf
-                                <button class="w-full rounded-xl bg-emerald-50 px-3 py-2 text-center text-xs font-bold text-emerald-700">Pass</button>
-                            </form>
+                            <button type="button" onclick="openPassModal({{ $cheque->id }}, '{{ addslashes($cheque->cheque_no) }}', '{{ $cheque->cheque_date?->format('Y-m-d') }}')" class="w-full rounded-xl bg-emerald-50 px-3 py-2 text-center text-xs font-bold text-emerald-700">Pass</button>
                             <button type="button" onclick="openReturnModal({{ $cheque->id }}, '{{ addslashes($cheque->cheque_no) }}')" class="rounded-xl bg-red-50 px-3 py-2 text-center text-xs font-bold text-red-600">Return</button>
                         @endif
                     </div>
@@ -244,10 +241,7 @@
                                     <a href="{{ route('cheques.show', $cheque->id) }}" class="rounded-xl bg-primary text-white px-3 py-2 text-xs font-bold">View</a>
                                     <a href="#" class="rounded-xl bg-slate-100 text-slate-700 px-3 py-2 text-xs font-bold">Edit</a>
                                     @if (in_array($cheque->status, $actionableStatuses, true))
-                                        <form method="POST" action="{{ route('cheques.mark-passed', $cheque) }}" onsubmit="return confirm('Mark cheque {{ $cheque->cheque_no }} as passed?')">
-                                            @csrf
-                                            <button class="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 transition hover:bg-emerald-500 hover:text-white">Pass</button>
-                                        </form>
+                                        <button type="button" onclick="openPassModal({{ $cheque->id }}, '{{ addslashes($cheque->cheque_no) }}', '{{ $cheque->cheque_date?->format('Y-m-d') }}')" class="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 transition hover:bg-emerald-500 hover:text-white">Pass</button>
                                         <button type="button" onclick="openReturnModal({{ $cheque->id }}, '{{ addslashes($cheque->cheque_no) }}')" class="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-500 hover:text-white">Return</button>
                                     @endif
                                     <button type="button"
@@ -306,6 +300,26 @@
             <div class="flex items-center gap-3 border-t border-slate-100 px-6 py-5">
                 <button type="button" onclick="closeReturnModal()" class="flex-1 rounded-2xl bg-slate-100 px-4 py-3 text-sm font-bold text-slate-700">Cancel</button>
                 <button class="flex-1 rounded-2xl bg-red-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-red-500/20">Mark Returned</button>
+            </div>
+        </form>
+    </div>
+
+    {{-- Pass Cheque Modal --}}
+    <div id="passModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4 lg:p-8">
+        <div class="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onclick="closePassModal()"></div>
+        <form id="passChequeForm" method="POST" action="" class="relative z-10 w-full max-w-sm rounded-3xl bg-white shadow-2xl">
+            @csrf
+            <div class="p-6 text-center">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+                    <i class="fa-solid fa-check-double text-2xl"></i>
+                </div>
+                <h3 class="mb-2 text-xl font-extrabold text-navy">Pass Cheque <span id="passModalChequeNo"></span></h3>
+                <p id="passModalMessage" class="text-sm font-medium text-slate-500">Are you sure you want to mark this cheque as passed?</p>
+            </div>
+            
+            <div class="flex items-center gap-3 border-t border-slate-100 px-6 py-5">
+                <button type="button" onclick="closePassModal()" class="flex-1 rounded-2xl bg-slate-100 px-4 py-3 text-sm font-bold text-slate-700">Cancel</button>
+                <button class="flex-1 rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/20">Mark Passed</button>
             </div>
         </form>
     </div>
@@ -374,6 +388,33 @@
     <script>
         // SMS modal scripts
         let currentChequeId = null;
+
+        function openPassModal(chequeId, chequeNo, chequeDate) {
+            const form = document.getElementById('passChequeForm');
+            form.action = `/cheques/${chequeId}/mark-passed`;
+            document.getElementById('passModalChequeNo').textContent = chequeNo;
+            
+            const msgEl = document.getElementById('passModalMessage');
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (chequeDate && chequeDate > today) {
+                msgEl.innerHTML = `The cheque pass date is <strong>${chequeDate}</strong>. Do you really want to pass it now?`;
+                msgEl.classList.remove('text-slate-500');
+                msgEl.classList.add('text-amber-600');
+            } else {
+                msgEl.textContent = 'Are you sure you want to mark this cheque as passed?';
+                msgEl.classList.remove('text-amber-600');
+                msgEl.classList.add('text-slate-500');
+            }
+            
+            document.getElementById('passModal').classList.remove('hidden');
+            document.getElementById('passModal').classList.add('flex');
+        }
+
+        function closePassModal() {
+            document.getElementById('passModal').classList.add('hidden');
+            document.getElementById('passModal').classList.remove('flex');
+        }
 
         function openReturnModal(chequeId, chequeNo) {
             const form = document.getElementById('returnChequeForm');
