@@ -45,7 +45,7 @@ class SupplierController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $validated = $this->validateSupplier($request);
         $openingBalance = $validated['opening_balance'] ?? 0;
@@ -54,7 +54,15 @@ class SupplierController extends Controller
         $validated['current_balance'] = $openingBalance;
         $validated['created_by'] = $request->user()?->id;
 
-        Supplier::create($validated);
+        $supplier = Supplier::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'supplier' => $supplier,
+                'message' => 'Supplier created successfully.'
+            ]);
+        }
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier created successfully.');
     }

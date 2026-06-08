@@ -104,8 +104,11 @@
                 </div>
 
                 <div id="customerSelectContainer">
-                    <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-navy">
-                        Searchable Customer <span class="text-danger">*</span>
+                    <label class="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-navy">
+                        <span>Searchable Customer <span class="text-danger">*</span></span>
+                        <button type="button" onclick="openCustomerModal()" class="flex items-center gap-1 text-primary transition hover:text-blue-700">
+                            <i class="fa-solid fa-plus"></i> Add New
+                        </button>
                     </label>
                     <select name="customer_id" id="customerSelect" class="w-full">
                         <option value="">Search and select customer</option>
@@ -118,8 +121,11 @@
                 </div>
 
                 <div id="supplierSelectContainer" class="hidden">
-                    <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-navy">
-                        Searchable Supplier <span class="text-danger">*</span>
+                    <label class="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-navy">
+                        <span>Searchable Supplier <span class="text-danger">*</span></span>
+                        <button type="button" onclick="openSupplierModal()" class="flex items-center gap-1 text-primary transition hover:text-blue-700">
+                            <i class="fa-solid fa-plus"></i> Add New
+                        </button>
                     </label>
                     <select name="supplier_id" id="supplierSelect" class="w-full">
                         <option value="">Search and select supplier</option>
@@ -308,6 +314,138 @@
                 </div>
             </form>
         </section>
+    </div>
+
+    {{-- Add Customer Modal --}}
+    <div id="addCustomerModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4 lg:p-8">
+        <div class="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onclick="closeCustomerModal()"></div>
+        <form id="addCustomerForm" class="relative z-10 w-full max-w-2xl rounded-3xl bg-white shadow-2xl" onsubmit="submitCustomerModal(event)">
+            @csrf
+            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+                <h3 class="text-lg font-extrabold text-navy">Add New Customer</h3>
+                <button type="button" onclick="closeCustomerModal()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5">
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Customer Name <span class="text-danger">*</span></label>
+                        <input name="name" required class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Business Name</label>
+                        <input name="business_name" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Phone</label>
+                        <input name="phone" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Second Phone</label>
+                        <input name="phone_2" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Email</label>
+                        <input type="email" name="email" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">NIC</label>
+                        <input name="nic" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">City</label>
+                        <input name="city" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-bold text-navy">Address</label>
+                        <textarea name="address" rows="2" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10"></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-bold text-navy">Notes</label>
+                        <textarea name="notes" rows="2" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10"></textarea>
+                    </div>
+                </div>
+                <div id="customerModalError" class="hidden rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600"></div>
+            </div>
+            <div class="flex items-center gap-3 border-t border-slate-100 px-6 py-4">
+                <button type="button" onclick="closeCustomerModal()" class="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200">Cancel</button>
+                <button type="submit" id="customerSaveBtn" class="flex-1 rounded-2xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-blue-700">Save Customer</button>
+            </div>
+            <input type="hidden" name="status" value="active">
+        </form>
+    </div>
+
+    {{-- Add Supplier Modal --}}
+    <div id="addSupplierModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4 lg:p-8">
+        <div class="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onclick="closeSupplierModal()"></div>
+        <form id="addSupplierForm" class="relative z-10 w-full max-w-2xl rounded-3xl bg-white shadow-2xl" onsubmit="submitSupplierModal(event)">
+            @csrf
+            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+                <h3 class="text-lg font-extrabold text-navy">Add New Supplier</h3>
+                <button type="button" onclick="closeSupplierModal()" class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5">
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Supplier Name <span class="text-danger">*</span></label>
+                        <input name="name" required class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Business Name</label>
+                        <input name="business_name" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Phone</label>
+                        <input name="phone" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Second Phone</label>
+                        <input name="phone_2" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Email</label>
+                        <input type="email" name="email" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">City</label>
+                        <input name="city" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Bank Name</label>
+                        <input name="bank_name" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Bank Branch</label>
+                        <input name="bank_branch" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Account Name</label>
+                        <input name="account_name" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-navy">Account Number</label>
+                        <input name="account_no" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-bold text-navy">Address</label>
+                        <textarea name="address" rows="2" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10"></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="mb-2 block text-sm font-bold text-navy">Notes</label>
+                        <textarea name="notes" rows="2" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10"></textarea>
+                    </div>
+                </div>
+                <div id="supplierModalError" class="hidden rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-600"></div>
+            </div>
+            <div class="flex items-center gap-3 border-t border-slate-100 px-6 py-4">
+                <button type="button" onclick="closeSupplierModal()" class="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-700 hover:bg-slate-200">Cancel</button>
+                <button type="submit" id="supplierSaveBtn" class="flex-1 rounded-2xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-blue-700">Save Supplier</button>
+            </div>
+            <input type="hidden" name="status" value="active">
+        </form>
     </div>
 @endsection
 
@@ -799,9 +937,19 @@
             combinedOwnChequeRows.appendChild(row);
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function removeCombCustomerCheque(id) {
+            combinedCustomerCheques.delete(id);
+            renderCombinedCustomerCheques();
+        }
+
         function renderCombinedCustomerCheques() {
             combinedCustomerChequeList.innerHTML = '';
-
             if (combinedCustomerCheques.size === 0) {
                 combinedCustomerChequeList.innerHTML = '<p class="text-xs font-semibold text-slate-400">No customer cheques added yet.</p>';
                 return;
@@ -809,23 +957,17 @@
 
             combinedCustomerCheques.forEach(cheque => {
                 const row = document.createElement('div');
-                row.className = 'rounded-2xl border border-teal/20 bg-teal/5 p-4';
+                row.className = 'flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3';
                 row.innerHTML = `
-                    <input type="hidden" name="combined_source_customer_cheque_ids[]" value="${cheque.id}">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="font-extrabold text-navy">${cheque.cheque_no} - ${cheque.customer_name}</p>
-                            <p class="mt-1 text-xs font-semibold text-slate-500">${cheque.bank_name} | ${cheque.formatted_amount || formatRs(cheque.amount)} | ${formatDate(cheque.cheque_date)}</p>
-                        </div>
-                        <button type="button" data-cheque-id="${cheque.id}" class="remove-customer-cheque rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-100">
-                            Remove
-                        </button>
+                    <input type="hidden" name="combined_customer_cheques[]" value="${escapeHtml(cheque.id)}">
+                    <div>
+                        <p class="font-bold text-navy">${escapeHtml(cheque.cheque_no)} <span class="text-xs font-normal text-slate-500">- ${escapeHtml(cheque.customer_name)}</span></p>
+                        <p class="text-xs font-semibold text-primary">${escapeHtml(cheque.formatted_amount || formatRs(cheque.amount))}</p>
                     </div>
+                    <button type="button" onclick="removeCombCustomerCheque('${escapeHtml(cheque.id)}')" class="flex h-8 w-8 items-center justify-center rounded-xl bg-red-100 text-red-600 transition hover:bg-red-200">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 `;
-                row.querySelector('.remove-customer-cheque').addEventListener('click', event => {
-                    combinedCustomerCheques.delete(event.currentTarget.dataset.chequeId);
-                    renderCombinedCustomerCheques();
-                });
                 combinedCustomerChequeList.appendChild(row);
             });
         }
@@ -974,5 +1116,128 @@
         });
 
         syncForm();
+
+        // Modal scripts
+        function openCustomerModal() {
+            document.getElementById('addCustomerModal').classList.remove('hidden');
+            document.getElementById('addCustomerModal').classList.add('flex');
+            document.getElementById('addCustomerForm').reset();
+            document.getElementById('customerModalError').classList.add('hidden');
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('addCustomerModal').classList.add('hidden');
+            document.getElementById('addCustomerModal').classList.remove('flex');
+        }
+
+        async function submitCustomerModal(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = document.getElementById('customerSaveBtn');
+            const errorDiv = document.getElementById('customerModalError');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            errorDiv.classList.add('hidden');
+
+            try {
+                const formData = new FormData(form);
+                const res = await fetch("{{ route('customers.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    const c = data.customer;
+                    // Add to custom select
+                    customerSelect.options[c.id] = {
+                        id: c.id,
+                        text: `${c.name}${c.business_name ? ' - ' + c.business_name : ''}${c.phone ? ' (' + c.phone + ')' : ''}`,
+                        name: c.name,
+                        business_name: c.business_name || '',
+                        phone: c.phone || ''
+                    };
+                    customerSelect.setValue(c.id);
+                    closeCustomerModal();
+                } else {
+                    errorDiv.textContent = data.message || 'Error saving customer. Check if phone is already used.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.textContent = 'A network error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Save Customer';
+            }
+        }
+
+        function openSupplierModal() {
+            document.getElementById('addSupplierModal').classList.remove('hidden');
+            document.getElementById('addSupplierModal').classList.add('flex');
+            document.getElementById('addSupplierForm').reset();
+            document.getElementById('supplierModalError').classList.add('hidden');
+        }
+
+        function closeSupplierModal() {
+            document.getElementById('addSupplierModal').classList.add('hidden');
+            document.getElementById('addSupplierModal').classList.remove('flex');
+        }
+
+        async function submitSupplierModal(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = document.getElementById('supplierSaveBtn');
+            const errorDiv = document.getElementById('supplierModalError');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            errorDiv.classList.add('hidden');
+
+            try {
+                const formData = new FormData(form);
+                const res = await fetch("{{ route('suppliers.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    const s = data.supplier;
+                    // Add to custom select
+                    supplierSelect.options[s.id] = {
+                        id: s.id,
+                        text: `${s.name}${s.business_name ? ' - ' + s.business_name : ''}${s.phone ? ' (' + s.phone + ')' : ''}`,
+                        name: s.name,
+                        business_name: s.business_name || '',
+                        phone: s.phone || ''
+                    };
+                    supplierSelect.setValue(s.id);
+                    closeSupplierModal();
+                } else {
+                    errorDiv.textContent = data.message || 'Error saving supplier. Check if phone is already used.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.textContent = 'A network error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Save Supplier';
+            }
+        }
     </script>
 @endpush

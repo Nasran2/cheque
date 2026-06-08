@@ -41,7 +41,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $validated = $this->validateCustomer($request);
         $openingBalance = $validated['opening_balance'] ?? 0;
@@ -50,7 +50,15 @@ class CustomerController extends Controller
         $validated['current_balance'] = $openingBalance;
         $validated['created_by'] = $request->user()?->id;
 
-        Customer::create($validated);
+        $customer = Customer::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'customer' => $customer,
+                'message' => 'Customer created successfully.'
+            ]);
+        }
 
         return redirect()->route('customers.index')->with('success', 'Customer created successfully.');
     }
